@@ -4,30 +4,7 @@ import tkinter
 import Jango 
 import flask
 
-
-'''class Event:
-    def __init__(self, name, time, description=""):
-        self.name = name
-        self.time = time
-        self.description = description
-
-    def __str__(self):
-        return f"{self.time}: {self.name} - {self.description}"
-
-class DailySchedule:
-    def __init__(self):
-        self.events = []
-
-    def add_event(self, event):
-        self.events.append(event)
-
-    def remove_event(self, event_name):
-        self.events = [event for event in self.events if event.name != event_name]
-
-    def view_schedule(self):
-        for event in sorted(self.events, key=lambda x: x.time):
-            print(event)
-
+'''
 class Event:
     def __init__(self, name, time, description=""):
         self.name = name
@@ -87,14 +64,9 @@ def main():
             print("Invalid option. Please try again.")
 
 if __name__ == "__main__":
-    main()
+    main()'''
 
-
-# Example usage
-schedule = DailySchedule()
-schedule.add_event(Event("Meeting", "09:00", "Team sync"))
-schedule.add_event(Event("Lunch", "12:00", "With client"))
-schedule.add_event(Event("Workout", "18:00", "Gym "))'''
+import json
 
 class Event:
     def __init__(self, name, time, description=""):
@@ -105,17 +77,24 @@ class Event:
     def __str__(self):
         return f"{self.time}: {self.name} - {self.description}"
 
+    def to_dict(self):
+        return {"name": self.name, "time": self.time, "description": self.description}
+
 class DailySchedule:
-    def __init__(self):
+    def __init__(self, filename="schedule.json"):
         self.events = []
+        self.filename = filename
+        self.load_events()
 
     def add_event(self, event):
         self.events.append(event)
         print("Event added successfully!")
+        self.save_events()
 
     def remove_event(self, event_name):
         self.events = [event for event in self.events if event.name != event_name]
         print("Event removed successfully!")
+        self.save_events()
 
     def view_schedule(self):
         if not self.events:
@@ -123,6 +102,18 @@ class DailySchedule:
         else:
             for event in sorted(self.events, key=lambda x: x.time):
                 print(event)
+
+    def save_events(self):
+        with open(self.filename, "w") as f:
+            json.dump([event.to_dict() for event in self.events], f)
+
+    def load_events(self):
+        try:
+            with open(self.filename, "r") as f:
+                events_data = json.load(f)
+                self.events = [Event(**data) for data in events_data]
+        except FileNotFoundError:
+            pass
 
 def main():
     schedule = DailySchedule()
@@ -156,3 +147,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
